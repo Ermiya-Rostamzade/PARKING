@@ -2,8 +2,8 @@ public class LinkedListStack {
     private Node top;
     private int capacity;
     private int size;
-    private int stackIndex; // اضافه شدن: شماره Stack
-    private CarDAO carDAO; // اضافه شدن: شیء DAO
+    private int stackIndex;
+    private CarDAO carDAO;
 
     public LinkedListStack(int capacity, int stackIndex, CarDAO carDAO) {
         this.capacity = capacity;
@@ -13,6 +13,10 @@ public class LinkedListStack {
         this.carDAO = carDAO;
 
     }
+    public int getSize() {
+        return this.size;
+    }
+
 
     public Node getTop() {
         return top;
@@ -31,10 +35,10 @@ public class LinkedListStack {
         top = newNode;
         size++;
 
-        // --- اضافه شدن قسمت دیتابیس (ذخیره) ---
-        // موقعیت در استک (PositionInStack) برای Pop اولویت 1 دارد و هر چه به عقب می رویم بیشتر می شود.
+
+
         carDAO.saveCar(car, stackIndex , size);
-        // ----------------------------------------
+
         return true;
 
     }
@@ -46,7 +50,7 @@ public class LinkedListStack {
         Car carpopped = top.getData();
         top = top.getNext();
         size--;
-        // در متد exitCar از کلاس Parking، حذف از دیتابیس انجام می شود.
+
 
         return carpopped;
     }
@@ -78,7 +82,7 @@ public class LinkedListStack {
         }
         Node middle = getMiddle(head);
         Node nextOfmiddle = middle.getNext();
-        middle.setNext(null);// قطع کردن لینک برای تقسیم لیست
+        middle.setNext(null);
         Node left = mergeSort(head);
         Node right = mergeSort(nextOfmiddle);
         Node sortedList = sortedMerge(left, right);
@@ -117,13 +121,12 @@ public class LinkedListStack {
         }
         return result;
     }
-    // متد جدید برای ذخیره مجدد تمام ماشین‌ها بعد از مرتب سازی
+
     public void saveAllToDatabase() {
         Node current = this.top;
         int positionFromTop = 1;
 
-        // ذخیره از بالا به پایین
-        // از آنجا که استک باید ذخیره شود، ما ابتدا همه را حذف و سپس دوباره ذخیره می کنیم.
+
         while (current != null) {
             carDAO.saveCar(current.getData(), stackIndex, positionFromTop);
             current = current.getNext();

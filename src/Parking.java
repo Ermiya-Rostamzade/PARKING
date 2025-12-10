@@ -13,10 +13,10 @@ public class Parking {
     public Parking(int n, int m) {
         this.numStacks = n;
         stacks = new LinkedListStack[n];
-        // --- اضافه شدن قسمت دیتابیس ---
-        SQLiteConnection.createTable(); // ایجاد جدول در زمان شروع
+
+        SQLiteConnection.createTable();
         this.carDAO = new CarDAO();
-        // -----------------------------
+
         for (int i = 0; i < n; i++) {
             stacks[i] = new LinkedListStack(m, i, carDAO);
         }
@@ -28,12 +28,7 @@ public class Parking {
     }
 
     public void ParkFirstAvaliable() {
-       /*  Car carToPark = queue.dequeue();
-        if (carToPark == null){
-            System.out.println("the entry queue is empty");
-            return;
-        }*/
-        //پیدا کردن استک خالی برای ماشین خارج شده از صف
+
         for (int i = 0; i < numStacks; i++) {
             if (!stacks[i].isFull()) {
                 Car carToPark = queue.dequeue();
@@ -50,7 +45,7 @@ public class Parking {
         System.out.println("The parking is full. There is no parking available.");
     }
 
-    /// / این ابهام داره******************************************************
+
     public void parkSpecificStack(int stackIndex) {
 
         if (stacks[stackIndex].isFull()) {
@@ -78,17 +73,16 @@ public class Parking {
             int positionFromTop = 1;
             while (current != null) {
                 if (current.getData().getId() == carid) {
-                    // int stackcapasity = stacks[i].getCapacity();
                     return new int[]{i, positionFromTop};
                 }
                 current = current.getNext();
                 positionFromTop++;
-
             }
         }
-        return new int[]{-1, -1};
-
+        return null;
     }
+
+
 
     public Car exitCar(int carId) {
         int[] res = findCar(carId);
@@ -101,19 +95,19 @@ public class Parking {
             return null;
         }
 
-        // فقط اگر ماشین در بالای Stack باشد (جایگاه 1):
+
         if (position == 1) {
             Car removedCar = stacks[stackIndex].pop();
-            // --- حذف از دیتابیس هنگام خروج ---
+
             if (removedCar != null) {
                 carDAO.deleteCar(removedCar.getId());
             }
-            // ------------------------------------
+
             System.out.println("Car " + carId + " exited from stack " + (stackIndex + 1));
             return removedCar;
         }
 
-        // در غیر این صورت خروج ممنوع است:
+
         System.out.println("Car " + carId + " is not at the top of stack " + (stackIndex + 1) +
                 ". Exit not allowed.");
         return null;
@@ -124,13 +118,13 @@ public class Parking {
             System.out.println("Invalid stack index.");
             return;
         }
-        // حذف تمام رکوردهای Stack از دیتابیس قبل از مرتب سازی
+
         carDAO.deleteStackCars(stackIndex);
 
-        // مرتب سازی در حافظه
+
         stacks[stackIndex].sortStack();
 
-        // ذخیره مجدد تمام ماشین های Stack در دیتابیس با ترتیب جدید
+
         stacks[stackIndex].saveAllToDatabase();
 
         System.out.println("Stack " + (stackIndex + 1) + " has been sorted and database updated.");
@@ -143,11 +137,11 @@ public class Parking {
         }
         while (!stacks[i].isEmpty()) {
             Car carToMove = stacks[i].pop();
-            // --- اضافه کردن منطق حذف از دیتابیس ---
+
             if (carToMove != null) {
-                carDAO.deleteCar(carToMove.getId()); // 2. حذف رکورد قبلی از دیتابیس
+                carDAO.deleteCar(carToMove.getId());
             }
-            // ----------------------------------------
+
             if (!stacks[j].isFull()) {
                 stacks[j].push(carToMove);
             } else {
@@ -197,7 +191,7 @@ public class Parking {
         System.out.println("=================================");
     }
 
-    // متد جدید برای نمایش وضعیت دیتابیس
+
     private void showDatabaseStatus() {
         System.out.println("\n--- Current Database Status (SQLite) ---");
         String sql = "SELECT CarID, StackIndex, PositionInStack FROM Cars ORDER BY StackIndex, PositionInStack DESC";
