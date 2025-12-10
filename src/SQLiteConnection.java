@@ -22,7 +22,7 @@ public class SQLiteConnection {
 
 
     public static void createTable() {
-        
+
 
         String sql = """
     CREATE TABLE IF NOT EXISTS Cars (
